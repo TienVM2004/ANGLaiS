@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-1*qg9$1ml&&+abp!se7!32_+p!57_6u7z^c0ik-%2nd%yb3ww5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['anglais.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     
     'flashcard.apps.FlashcardConfig',
     'english_mastermind.apps.EnglishMastermindConfig',
-    'carolina.apps.CarolinaConfig',
+    
     'bootstrap4',
     'django_htmx',
 
-    
+    'social_django', 
     'django_extensions',
 ]
 
@@ -66,7 +66,7 @@ ROOT_URLCONF = 'anglais.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,13 +88,17 @@ WSGI_APPLICATION = 'anglais.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'btl_cnpm',
-        'USER': 'root',
-        'PASSWORD' : 'min03084053', 
-        'HOST': 'localhost',
-        'PORT': '3006',
+        'NAME': 'freedb_anglais',
+        'USER': 'freedb_vuminhtien2004',
+        'PASSWORD' : 'GK5!NU&wSX9eGv4', 
+        'HOST': 'sql.freedb.tech',
+        'PORT': '3306',
     }
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://anglais.onrender.com']
+CORS_ORIGIN_WHITELIST = ['https://anglais.onrender.com']
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -130,10 +134,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
@@ -159,8 +162,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = [
  'django.contrib.auth.backends.ModelBackend',
  'account.authentication.EmailAuthBackend',
+ 'social_core.backends.facebook.FacebookOAuth2',
+ 'social_core.backends.google.GoogleOAuth2',
 ]
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+SOCIAL_AUTH_PIPELINE = [
+ 'social_core.pipeline.social_auth.social_details',
+ 'social_core.pipeline.social_auth.social_uid',
+ 'social_core.pipeline.social_auth.auth_allowed',
+ 'social_core.pipeline.social_auth.social_user',
+ 'social_core.pipeline.user.get_username',
+ 'social_core.pipeline.user.create_user',
+ 'account.authentication.create_profile',
+ 'social_core.pipeline.social_auth.associate_user',
+ 'social_core.pipeline.social_auth.load_extra_data',
+ 'social_core.pipeline.user.user_details',
+]
